@@ -1,0 +1,357 @@
+/* General body */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(180deg, #ffe6f1, #f8f0ff);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Game container */
+.game-container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: 600px;
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+/* Room info */
+.room-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.room-code, .nickname {
+  font-size: 0.9rem;
+}
+/* Room code display for host */
+.room-code-display {
+  margin: 0.5rem 0;
+  background: #fff0f5;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(255, 130, 170, 0.3);
+  user-select: all;
+}
+
+.copy-btn {
+  background: #ff82aa;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  background: #ff6699;
+}
+
+/* Waiting state text */
+.status-message.waiting {
+  background: rgba(255, 193, 209, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: center;
+  color: #444;
+}
+
+
+/* Player layout */
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+  padding: 0.3rem 0.5rem;
+  border-radius: 1rem;
+}
+
+.player.active-turn {
+  border: 2px solid #ff82aa;
+  background: #fff0f5;
+}
+
+.opponent {
+  opacity: 0.8;
+}
+
+.avatar-icon {
+  color: #ff82aa;
+}
+
+.name {
+  margin-top: 0.5rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.last-word {
+  margin-top: 0.3rem;
+  font-size: 1.1rem;
+  color: #555;
+  word-break: break-word;
+  text-align: center;
+}
+
+/* Timer */
+.timer {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  font-size: 3rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.timer-icon {
+  opacity: 0.3;
+}
+
+/* Input area */
+.input-area {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.word-input {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border: 2px solid #ffd5ea;
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.2s;
+  min-width: 60%;
+}
+
+.word-input:focus {
+  border-color: #ff9ecb;
+}
+
+.submit-btn {
+  background: #ff82aa;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.submit-btn:hover {
+  background: #ff6699;
+}
+
+/* Floating message */
+.floating-message {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 193, 209, 0.9);
+  color: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Game over */
+.game-over {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease-in-out;
+}
+
+.game-over h2 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #444;
+  text-align: center;
+}
+
+.restart-btn {
+  background: #ff82aa;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.restart-btn:hover {
+  background: #ff6699;
+}
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+  .game-container {
+    height: 100%;
+    padding: 1rem;
+  }
+
+  .avatar-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .timer {
+    font-size: 2.5rem;
+  }
+
+  .word-input {
+    font-size: 0.9rem;
+  }
+}
+
+.room-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #ffe6f1, #f8f0ff);
+  padding: 2rem;
+  text-align: center;
+}
+
+.room-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mode-toggle button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.mode-toggle .active {
+  background: #ff82aa;
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 130, 170, 0.4);
+}
+
+.mode-toggle button:not(.active) {
+  background: #f0f0f0;
+  color: #555;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.input-group input {
+  padding: 0.6rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid #ffd5ea;
+  text-align: center;
+  width: 220px;
+  transition: 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #ff82aa;
+  outline: none;
+}
+
+.input-group button {
+  background: #ff82aa;
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.input-group button:hover {
+  background: #ff6699;
+}
+
+.status-message {
+  margin-top: 1rem;
+  color: #e53935;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.footer-info {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #888;
+  font-size: 0.9rem;
+}
