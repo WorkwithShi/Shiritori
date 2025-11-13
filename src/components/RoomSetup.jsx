@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { db, ref, set, get, onValue } from "../firebaseConfig";
 import { PlusCircle, LogIn, AlertCircle, Users, Sparkles, Copy } from "lucide-react";
 
@@ -32,33 +32,35 @@ export default function RoomSetup({ onJoin }) {
 
       setWaiting(true);
       setStatus("Room created! Waiting for opponent...");
-      onJoin({ code, isHost: true }, nickname, true);
+      onJoin(code, nickname, true);
 
-      // Listen for opponent
+      // Listen for opponent joining
       const playersRef = ref(db, `rooms/${code}/players`);
       const unsubscribe = onValue(playersRef, (snapshot) => {
         const players = snapshot.val();
         if (players && Object.keys(players).length >= 2) {
           setStatus("Opponent joined! Game starting...");
           setWaiting(false);
-          unsubscribe(); // stop listening
+          unsubscribe();
         }
       });
     } catch (err) {
-      setStatus("Failed to create room. Try again.");
-      console.error(err);
+      console.error("Room creation error:", err);
+      setStatus(`Failed to create room: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   const joinRoom = async () => {
-    if (!nickname.trim() || !roomCode.trim()) return setStatus("Enter both nickname and room code.");
+    if (!nickname.trim() || !roomCode.trim())
+      return setStatus("Enter both nickname and room code.");
     setLoading(true);
 
     try {
       const roomRef = ref(db, `rooms/${roomCode}`);
       const snapshot = await get(roomRef);
+
       if (!snapshot.exists()) return setStatus("Room not found!");
 
       const room = snapshot.val();
@@ -66,13 +68,13 @@ export default function RoomSetup({ onJoin }) {
       if (room.players[nickname]) return setStatus("Nickname already taken!");
 
       await set(ref(db, `rooms/${roomCode}/players/${nickname}`), true);
-      await set(ref(db, `rooms/${roomCode}/status`), "playing"); // start game
+      await set(ref(db, `rooms/${roomCode}/status`), "playing");
       await set(ref(db, `rooms/${roomCode}/isHost`), false);
 
-      onJoin({ code: roomCode, isHost: false }, nickname, false);
+      onJoin(roomCode, nickname, false); 
     } catch (err) {
-      console.error(err);
-      setStatus("Failed to join room. Try again.");
+      console.error("Join room error:", err);
+      setStatus(`Failed to join room: ${err.message}`);
     } finally {
       setLoading(false);
     }

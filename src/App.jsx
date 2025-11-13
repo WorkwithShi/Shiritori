@@ -13,7 +13,9 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [checking, setChecking] = useState(false);
   const [players, setPlayers] = useState({});
+  const [input, setInput] = useState("");
 
+  // Handle joining or creating a room
   const handleJoin = (roomCode, nickname, isHost) => {
     const roomRef = ref(db, `rooms/${roomCode}`);
 
@@ -43,6 +45,7 @@ export default function App() {
   // Timer logic
   useEffect(() => {
     if (!room || gameOver) return;
+
     if (timer === 0) {
       const winner = turn === room.nickname ? "Opponent" : "You";
       setMessage(`Time's up! ${winner} wins!`);
@@ -53,16 +56,17 @@ export default function App() {
       });
       return;
     }
+
     const interval = setInterval(() => setTimer((t) => t - 1), 1000);
     return () => clearInterval(interval);
   }, [timer, gameOver, turn, room]);
 
+  // Handle submitting a word
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!room) return;
 
-    const word = e.target.value || e.target.input?.value || "";
-    const trimmedWord = word.trim();
+    const trimmedWord = input.trim();
     if (!trimmedWord) return;
 
     setChecking(true);
@@ -110,9 +114,11 @@ export default function App() {
 
     setWords(newWords);
     setTurn(nextTurn);
+    setInput("");
     setTimer(10);
   };
 
+  // Restart the game
   const handleRestart = async () => {
     if (!room) return;
 
@@ -133,11 +139,12 @@ export default function App() {
     setGameOver(false);
     setMessage("Waiting for opponent to join...");
     setPlayers({ [hostNickname]: true });
+    setInput("");
   };
 
   // Waiting screen if second player hasn't joined yet
   if (!room) return <RoomSetup onJoin={handleJoin} />;
-  if (!gameOver && room && Object.keys(players).length < 2) {
+  if (!gameOver && Object.keys(players).length < 2) {
     return (
       <div className="waiting-screen">
         <h2>Waiting for opponent to join...</h2>
@@ -155,8 +162,8 @@ export default function App() {
       gameOver={gameOver}
       message={message}
       checking={checking}
-      onInputChange={setInput}
       input={input}
+      onInputChange={setInput}
       onSubmit={handleSubmit}
       onRestart={handleRestart}
     />
