@@ -12,8 +12,13 @@ export default function RoomSetup({ onJoin }) {
 
   const generateCode = () => Math.random().toString(36).substring(2, 7).toUpperCase();
 
+  const showStatus = (msg, duration = 3000) => {
+    setStatus(msg);
+    if (duration) setTimeout(() => setStatus(""), duration);
+  };
+
   const createRoom = async () => {
-    if (!nickname.trim()) return setStatus("Please enter your nickname!");
+    if (!nickname.trim()) return showStatus("Please enter your nickname!");
     setLoading(true);
 
     const code = generateCode();
@@ -31,7 +36,8 @@ export default function RoomSetup({ onJoin }) {
       });
 
       setWaiting(true);
-      setStatus("Room created! Waiting for opponent...");
+      showStatus("Room created! Waiting for opponent...");
+
       onJoin(code, nickname, true);
 
       // Listen for opponent joining
@@ -39,14 +45,14 @@ export default function RoomSetup({ onJoin }) {
       const unsubscribe = onValue(playersRef, (snapshot) => {
         const players = snapshot.val();
         if (players && Object.keys(players).length >= 2) {
-          setStatus("Opponent joined! Game starting...");
+          showStatus("Opponent joined! Game starting...", 2000);
           setWaiting(false);
           unsubscribe();
         }
       });
     } catch (err) {
       console.error("Room creation error:", err);
-      setStatus(`Failed to create room: ${err.message}`);
+      showStatus(`Failed to create room: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -54,18 +60,18 @@ export default function RoomSetup({ onJoin }) {
 
   const joinRoom = async () => {
     if (!nickname.trim() || !roomCode.trim())
-      return setStatus("Enter both nickname and room code.");
+      return showStatus("Enter both nickname and room code.");
     setLoading(true);
 
     try {
       const roomRef = ref(db, `rooms/${roomCode}`);
       const snapshot = await get(roomRef);
 
-      if (!snapshot.exists()) return setStatus("Room not found!");
+      if (!snapshot.exists()) return showStatus("Room not found!");
 
       const room = snapshot.val();
-      if (Object.keys(room.players).length >= 2) return setStatus("Room is full!");
-      if (room.players[nickname]) return setStatus("Nickname already taken!");
+      if (Object.keys(room.players).length >= 2) return showStatus("Room is full!");
+      if (room.players[nickname]) return showStatus("Nickname already taken!");
 
       await set(ref(db, `rooms/${roomCode}/players/${nickname}`), true);
       await set(ref(db, `rooms/${roomCode}/status`), "playing");
@@ -74,7 +80,7 @@ export default function RoomSetup({ onJoin }) {
       onJoin(roomCode, nickname, false); 
     } catch (err) {
       console.error("Join room error:", err);
-      setStatus(`Failed to join room: ${err.message}`);
+      showStatus(`Failed to join room: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -82,8 +88,7 @@ export default function RoomSetup({ onJoin }) {
 
   const copyCode = () => {
     navigator.clipboard.writeText(roomCode);
-    setStatus("Room code copied!");
-    setTimeout(() => setStatus(""), 3000);
+    showStatus("Room code copied!");
   };
 
   return (

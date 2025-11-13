@@ -14,6 +14,8 @@ export default function App() {
   const [checking, setChecking] = useState(false);
   const [players, setPlayers] = useState({});
   const [input, setInput] = useState("");
+  const [restarting, setRestarting] = useState(false);
+
 
   // Handle joining or creating a room
   const handleJoin = (roomCode, nickname, isHost) => {
@@ -61,10 +63,32 @@ export default function App() {
     return () => clearInterval(interval);
   }, [timer, gameOver, turn, room]);
 
+  // Block game start until both players are present
+useEffect(() => {
+  if (!room) return; // don't run if room not joined yet
+
+  if (Object.keys(players).length < 2) {
+    setMessage("Waiting for opponent to join...");
+    return;
+  }
+
+  // Start the game timer if both players joined and game isn't over
+  if (!gameOver && timer === 10) {
+    setMessage("Game started!");
+  }
+}, [players, gameOver, timer, room]);
+
+
   // Handle submitting a word
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!room) return;
+
+    if (Object.keys(players).length < 2) {
+  setMessage("Waiting for opponent to join...");
+  return;
+}
+
 
     const trimmedWord = input.trim();
     if (!trimmedWord) return;
@@ -115,32 +139,39 @@ export default function App() {
     setWords(newWords);
     setTurn(nextTurn);
     setInput("");
-    setTimer(10);
+    setTimer(60);
   };
 
-  // Restart the game
   const handleRestart = async () => {
-    if (!room) return;
+  if (!room || restarting) return; // Prevent double click
+  setRestarting(true);
 
-    const hostNickname = room.nickname;
+  const roomRef = ref(db, `rooms/${room.code}`);
+  const snapshot = await get(roomRef);
+  const roomData = snapshot.val() || {};
 
-    await set(ref(db, `rooms/${room.code}`), {
-      host: hostNickname,
-      players: { [hostNickname]: true },
-      words: [],
-      turn: hostNickname,
-      status: "waiting",
-      createdAt: Date.now(),
-    });
+  await update(roomRef, {
+    words: [],
+    turn: roomData.host,
+    status: "playing",
+    message: "Game restarted!",
+  });
 
-    setWords([]);
-    setTurn(hostNickname);
-    setTimer(10);
-    setGameOver(false);
-    setMessage("Waiting for opponent to join...");
-    setPlayers({ [hostNickname]: true });
-    setInput("");
-  };
+  // Update local state
+  setWords([]);
+  setTurn(roomData.host);
+  setTimer(10);
+  setGameOver(false);
+  setMessage("Game restarted!");
+  setPlayers(roomData.players || {});
+  setInput("");
+
+  // Hide the message after 2 seconds
+  setTimeout(() => setMessage(""), 2000);
+
+  setRestarting(false);
+};
+
 
   // Waiting screen if second player hasn't joined yet
   if (!room) return <RoomSetup onJoin={handleJoin} />;
@@ -166,6 +197,7 @@ export default function App() {
       onInputChange={setInput}
       onSubmit={handleSubmit}
       onRestart={handleRestart}
+      restarting={restarting}
     />
   );
 }

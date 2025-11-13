@@ -14,6 +14,7 @@ export default function OnlineGame({
   onInputChange,
   onSubmit,
   onRestart,
+  restarting,
 }) {
   if (!room) return null;
 
@@ -85,13 +86,18 @@ export default function OnlineGame({
 
       {/* Game Over */}
       {gameOver && (
-        <div className="game-over">
-          <h2>{message || "Game Over"}</h2>
-          <button onClick={onRestart} className="restart-btn">
-            <RotateCcw size={18} /> Restart
-          </button>
-        </div>
-      )}
+  <div className="game-over">
+    <h2>{message || "Game Over"}</h2>
+    <button
+      onClick={onRestart}
+      className="restart-btn"
+      disabled={restarting} // now works!
+    >
+      {restarting ? "Restarting..." : <><RotateCcw size={18} /> Restart</>}
+    </button>
+  </div>
+)}
+
     </div>
   );
 }

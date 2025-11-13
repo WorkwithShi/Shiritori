@@ -21,6 +21,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   padding: 1.5rem;
   overflow: hidden;
 }
@@ -39,6 +40,7 @@ body {
 .room-code, .nickname {
   font-size: 0.9rem;
 }
+
 /* Room code display for host */
 .room-code-display {
   margin: 0.5rem 0;
@@ -83,7 +85,6 @@ body {
   color: #444;
 }
 
-
 /* Player layout */
 .player {
   display: flex;
@@ -99,8 +100,13 @@ body {
   background: #fff0f5;
 }
 
-.opponent {
+.player.opponent {
+  margin-bottom: auto; /* always top */
   opacity: 0.8;
+}
+
+.player.self {
+  margin-top: auto; /* always bottom */
 }
 
 .avatar-icon {
@@ -124,7 +130,7 @@ body {
 /* Timer */
 .timer {
   position: absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
@@ -197,6 +203,7 @@ body {
   gap: 0.4rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease-in-out;
+  z-index: 20;
 }
 
 /* Game over */
@@ -210,6 +217,7 @@ body {
   align-items: center;
   backdrop-filter: blur(4px);
   transition: all 0.3s ease-in-out;
+  z-index: 30;
 }
 
 .game-over h2 {
@@ -232,7 +240,12 @@ body {
   transition: 0.2s;
 }
 
-.restart-btn:hover {
+.restart-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.restart-btn:hover:not(:disabled) {
   background: #ff6699;
 }
 
@@ -257,6 +270,7 @@ body {
   }
 }
 
+/* Room setup page */
 .room-container {
   display: flex;
   flex-direction: column;
@@ -354,4 +368,12 @@ body {
   gap: 0.5rem;
   color: #888;
   font-size: 0.9rem;
+}
+
+/* Opponent icon always top */
+.opponent-icon {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
